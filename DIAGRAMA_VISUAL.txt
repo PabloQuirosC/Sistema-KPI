@@ -1,0 +1,285 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    DIAGRAMA DE BASE DE DATOS - SISTEMA KPI
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         ESTRUCTURA DE TABLAS                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+╔═══════════════════╗
+║     ROLES         ║
+╠═══════════════════╣
+║ • id (PK)         ║
+║ • nombre          ║──┐
+║ • descripcion     ║  │
+║ • tipo            ║  │
+╚═══════════════════╝  │
+                       │
+                       │
+╔═══════════════════╗  │  ╔═══════════════════╗
+║   DEPARTAMENTOS   ║  │  ║    PERMISOS       ║
+╠═══════════════════╣  │  ╠═══════════════════╣
+║ • id (PK)         ║──┼──║ • id (PK)         ║
+║ • nombre          ║  │  ║ • rol_id (FK)     ║
+║ • responsable_id  ║  │  ║ • modulo          ║
+║ • descripcion     ║  │  ║ • accion          ║
+║ • empleados_count ║  │  ║ • permitido       ║
+╚═══════════════════╝  │  ╚═══════════════════╝
+         │             │
+         │             │
+         │  ╔═══════════════════╗
+         │  ║    USUARIOS       ║
+         └──╠═══════════════════╣
+            ║ • id (PK)         ║──┐
+            ║ • nombre          ║  │
+            ║ • email           ║  │
+            ║ • password_hash   ║  │
+            ║ • rol_id (FK)     ║──┘
+            ║ • departamento_id ║
+            ║ • estado          ║
+            ║ • ultimo_acceso   ║
+            ╚═══════════════════╝
+                     │
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+        │            │            │
+        ▼            ▼            ▼
+╔═══════════════╗ ╔════════════════╗ ╔═══════════════════╗
+║  EMPLEADOS    ║ ║   PROYECTOS    ║ ║  RESPONSABLES     ║
+╠═══════════════╣ ╠════════════════╣ ╠═══════════════════╣
+║ • id (PK)     ║ ║ • id (PK)      ║ ║ • id (PK)         ║
+║ • usuario_id  ║ ║ • nombre       ║ ║ • usuario_id (FK) ║
+║ • nombre      ║ ║ • descripcion  ║ ║ • departamento_id ║
+║ • cargo       ║ ║ • depto_id (FK)║ ║ • tipo            ║
+║ • depto_id    ║ ║ • creado_por   ║ ║ • asignacion      ║
+║ • email       ║ ║ • fecha_inicio ║ ║ • estado          ║
+║ • telefono    ║ ║ • fecha_fin    ║ ╚═══════════════════╝
+║ • fecha_ingr  ║ ║ • estado       ║
+║ • estado      ║ ║ • progreso     ║
+║ • tareas_comp ║ ║ • total_tareas ║
+║ • rendimiento ║ ║ • presupuesto  ║
+╚═══════════════╝ ╚════════════════╝
+        │                  │
+        │                  │
+        │         ╔═══════════════════╗
+        │         ║    OBJETIVOS      ║
+        │         ╠═══════════════════╣
+        │         ║ • id (PK)         ║
+        │         ║ • nombre          ║
+        │         ║ • proyecto_id (FK)║
+        │         ║ • asignado_a (FK) ║
+        │         ║ • fecha_inicio    ║
+        │         ║ • fecha_fin       ║
+        │         ║ • estado          ║
+        │         ║ • progreso        ║
+        │         ║ • tareas_totales  ║
+        │         ╚═══════════════════╝
+        │                  │
+        │                  │
+        │         ╔═══════════════════╗
+        └─────────║      TAREAS       ║
+                  ╠═══════════════════╣
+                  ║ • id (PK)         ║
+                  ║ • titulo          ║
+                  ║ • descripcion     ║
+                  ║ • proyecto_id (FK)║
+                  ║ • objetivo_id (FK)║
+                  ║ • asignado_a (FK) ║──┘
+                  ║ • creado_por (FK) ║
+                  ║ • prioridad       ║
+                  ║ • estado          ║
+                  ║ • fecha_venc      ║
+                  ║ • progreso        ║
+                  ║ • horas_est       ║
+                  ║ • horas_trab      ║
+                  ╚═══════════════════╝
+
+
+╔═══════════════════╗
+║    AUDITORIA      ║ (Registro de todos los cambios)
+╠═══════════════════╣
+║ • id (PK)         ║
+║ • usuario_id (FK) ║
+║ • accion          ║
+║ • modulo          ║
+║ • tabla           ║
+║ • registro_id     ║
+║ • datos_anterior  ║ (JSONB)
+║ • datos_nuevos    ║ (JSONB)
+║ • ip_address      ║
+║ • created_at      ║
+╚═══════════════════╝
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                           RELACIONES PRINCIPALES
+═══════════════════════════════════════════════════════════════════════════════
+
+1. USUARIOS → ROLES (N:1)
+   - Un usuario tiene un rol
+   - Un rol puede tener muchos usuarios
+
+2. USUARIOS → DEPARTAMENTOS (N:1)
+   - Un usuario pertenece a un departamento
+   - Un departamento tiene muchos usuarios
+
+3. EMPLEADOS → USUARIOS (1:1)
+   - Un empleado es un usuario
+   - Un usuario puede ser un empleado
+
+4. PROYECTOS → DEPARTAMENTOS (N:1)
+   - Un proyecto pertenece a un departamento
+   - Un departamento tiene muchos proyectos
+
+5. TAREAS → PROYECTOS (N:1)
+   - Una tarea pertenece a un proyecto
+   - Un proyecto tiene muchas tareas
+
+6. TAREAS → EMPLEADOS (N:1)
+   - Una tarea está asignada a un empleado
+   - Un empleado tiene muchas tareas
+
+7. OBJETIVOS → PROYECTOS (N:1)
+   - Un objetivo pertenece a un proyecto
+   - Un proyecto tiene muchos objetivos
+
+8. TAREAS → OBJETIVOS (N:1)
+   - Una tarea puede estar vinculada a un objetivo
+   - Un objetivo agrupa varias tareas
+
+9. RESPONSABLES → USUARIOS (N:1)
+   - Un responsable es un usuario con asignación especial
+   - Un usuario puede tener varias responsabilidades
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                              FLUJO DE DATOS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. AUTENTICACIÓN Y PERMISOS
+   ────────────────────────────
+   USUARIOS → ROLES → PERMISOS
+
+   El usuario se autentica → Se verifica su rol → Se obtienen sus permisos
+
+2. GESTIÓN DE PROYECTOS
+   ────────────────────────────
+   DEPARTAMENTOS → PROYECTOS → OBJETIVOS → TAREAS → EMPLEADOS
+
+   Departamento crea proyecto → Define objetivos → Crea tareas → Asigna empleados
+
+3. SEGUIMIENTO DE TAREAS
+   ────────────────────────────
+   EMPLEADO → TAREAS → ACTUALIZACIÓN → PROGRESO OBJETIVO → PROGRESO PROYECTO
+
+   Empleado trabaja en tarea → Actualiza estado → Calcula progreso objetivo →
+   → Actualiza progreso proyecto
+
+4. AUDITORÍA
+   ────────────────────────────
+   USUARIO → ACCIÓN → AUDITORIA
+
+   Cualquier cambio en el sistema se registra automáticamente
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                         ESTADOS Y ENUMERACIONES
+═══════════════════════════════════════════════════════════════════════════════
+
+ESTADOS DE USUARIO:
+├─ activo
+├─ inactivo
+└─ suspendido
+
+ROLES DE USUARIO:
+├─ administrador    (Acceso total)
+├─ gerente          (Gestión departamental)
+├─ lider-equipo     (Gestión de equipo)
+└─ empleado         (Acceso básico)
+
+ESTADOS DE PROYECTO:
+├─ planificacion
+├─ en-progreso
+├─ completado
+├─ pausado
+└─ cancelado
+
+ESTADOS DE TAREA:
+├─ pendiente
+├─ en-progreso
+├─ en-revision
+├─ completada
+└─ cancelada
+
+PRIORIDADES DE TAREA:
+├─ urgente  🔴
+├─ alta     🟠
+├─ media    🟡
+└─ baja     🟢
+
+TIPOS DE RESPONSABILIDAD:
+├─ proyecto
+├─ departamento
+├─ equipo
+└─ proceso
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                           MÉTRICAS CALCULADAS
+═══════════════════════════════════════════════════════════════════════════════
+
+PROYECTO:
+  progreso = (tareas_completadas / total_tareas) × 100
+
+OBJETIVO:
+  progreso = (tareas_completadas / tareas_totales) × 100
+  estado = automático según progreso y fechas
+
+EMPLEADO:
+  rendimiento = (tareas_completadas/total_tareas × 0.6) +
+                (horas_trabajadas/160 × 0.4) × 100
+
+  tasa_completado = (tareas_completadas / total_tareas) × 100
+
+DEPARTAMENTO:
+  empleados_count = COUNT(empleados activos)
+  rendimiento_promedio = AVG(rendimiento empleados)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                            ÍNDICES IMPORTANTES
+═══════════════════════════════════════════════════════════════════════════════
+
+BÚSQUEDAS FRECUENTES:
+├─ usuarios.email           (Login)
+├─ usuarios.rol_id          (Permisos)
+├─ tareas.asignado_a        (Mis tareas)
+├─ tareas.estado            (Dashboard)
+├─ tareas.fecha_vencimiento (Alertas)
+├─ proyectos.estado         (Proyectos activos)
+└─ auditoria.created_at     (Logs recientes)
+
+ÍNDICES COMPUESTOS:
+├─ (tareas.asignado_a, tareas.estado)
+├─ (proyectos.departamento_id, proyectos.estado)
+└─ (auditoria.usuario_id, auditoria.created_at)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                       CONSIDERACIONES DE DISEÑO
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ Normalización: 3NF (Tercera Forma Normal)
+✓ Integridad referencial: Foreign keys con ON DELETE policies
+✓ Desnormalización controlada: Contadores para performance
+✓ Soft delete: Considerar para datos críticos
+✓ Auditoría completa: Tabla de auditoria con JSONB
+✓ Índices optimizados: Para consultas frecuentes
+✓ Triggers: Automatización de cálculos
+✓ Vistas: Pre-cálculo de métricas complejas
+✓ Particionamiento: Tabla auditoria por fecha (futuro)
+✓ Seguridad: Encriptación de contraseñas, control de acceso
+
+
+═══════════════════════════════════════════════════════════════════════════════

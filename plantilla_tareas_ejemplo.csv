@@ -1,0 +1,8 @@
+Título,Descripción,Asignado A,Prioridad,Estado,Fecha Inicio,Fecha Vencimiento,Horas Estimadas
+Diseñar mockups de homepage,Crear diseños responsive para la página principal,María González,alta,pendiente,2026-04-25,2026-05-05,16
+Implementar autenticación,Desarrollar sistema de login con JWT,Pedro Martínez,alta,en-progreso,2026-04-20,2026-05-01,24
+Configurar base de datos,Setup de PostgreSQL y migraciones iniciales,Pedro Martínez,alta,pendiente,2026-04-22,2026-04-28,12
+Crear componentes de UI,Desarrollar librería de componentes reutilizables,Juan Pérez,media,pendiente,2026-04-26,2026-05-10,20
+Optimizar imágenes,Comprimir y optimizar assets del proyecto,María González,baja,pendiente,2026-05-01,2026-05-15,8
+Testing de integración,Pruebas end-to-end de la aplicación,Carlos Rodríguez,alta,pendiente,2026-05-05,2026-05-12,18
+Documentación API,Escribir documentación técnica de endpoints,Lucía Sánchez,media,pendiente,2026-04-28,2026-05-08,14
